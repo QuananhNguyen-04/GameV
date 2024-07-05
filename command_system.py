@@ -77,11 +77,11 @@ class CommandSystem(ext.Applicator):
                 (neighbor.sprite.x, neighbor.sprite.y): neighbor
                 for neighbor in neighbors
             }
-            for neighbor in neighbors_dict:
-                print("neighbor:", neighbor) 
-            print("====== =======\nCurrent:", current.area)
-            print("neighbors", len(neighbors))
-            print("G score:", g_score[current])
+            # for neighbor in neighbors_dict:
+            #     print("neighbor:", neighbor) 
+            # print("====== =======\nCurrent:", current.area)
+            # print("neighbors", len(neighbors))
+            # print("G score:", g_score[current])
             for dx, dy in ((-1, 0), (0, -1), (1, 0), (0, 1)):
                 neighbor = (
                     (current.x + dx * current_w) // current_w * current_w,
@@ -97,10 +97,10 @@ class CommandSystem(ext.Applicator):
                     world, neighbor_entity, components.TileComponent
                 ).type
                 if neighbor_entity.sprite.area in closed_set or etype == "Obstacle":
-                    if neighbor_entity.sprite.area in closed_set:
-                        print("Blocked", neighbor_entity.sprite.area)
-                    else:
-                        print("Obstacle", neighbor_entity.sprite.area)
+                    # if neighbor_entity.sprite.area in closed_set:
+                    #     print("Blocked", neighbor_entity.sprite.area)
+                    # else:
+                    #     print("Obstacle", neighbor_entity.sprite.area)
                     continue
 
                 tentative_g_score = g_score[current] + 1
@@ -108,10 +108,10 @@ class CommandSystem(ext.Applicator):
                     tentative_g_score += 2
                 # for item in f_score:
                 # print(item, type(item))
-                print(neighbor_entity.sprite.area)
-                print("Guess g score",tentative_g_score)
-                if neighbor_entity.sprite in g_score:
-                    print("Current g score",g_score[neighbor_entity.sprite])
+                # print(neighbor_entity.sprite.area)
+                # print("Guess g score",tentative_g_score)
+                # if neighbor_entity.sprite in g_score:
+                #     print("Current g score",g_score[neighbor_entity.sprite])
                 if (
                     neighbor_entity.sprite not in g_score
                     or tentative_g_score < g_score[neighbor_entity.sprite]
@@ -170,6 +170,6 @@ class CommandSystem(ext.Applicator):
             # print("player:", sprite.area)
             path = self.astar(world, sprite, end_sprite.sprite)
             if path:
-                # print([item.area for item in path])
+                print([item.area for item in path])
                 comp_path.assign_path(path)
         print("CommandSystem time:",sdl2.SDL_GetTicks() - start)

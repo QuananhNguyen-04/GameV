@@ -193,14 +193,21 @@ class InputSystem(sdl2.ext.Applicator):
             velocity.vx = 0
             velocity.vy = 0
             if focus.focused:
+                key_press = False
                 if keys[sdl2.SDL_SCANCODE_W]:
+                    key_press = True
                     velocity.vy = -speed
                 elif keys[sdl2.SDL_SCANCODE_S]:
+                    key_press = True
                     velocity.vy = speed
                 elif keys[sdl2.SDL_SCANCODE_A]:
+                    key_press = True
                     velocity.vx = -speed
                 elif keys[sdl2.SDL_SCANCODE_D]:
+                    key_press = True
                     velocity.vx = speed
+                if key_press:
+                    path.assign_path()
             # if 
             if path is None:
                 continue

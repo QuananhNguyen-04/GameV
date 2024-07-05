@@ -155,7 +155,7 @@ class Path:
     def __init__(self, path: list = None) -> None:
         self.path = path
         self.current_pos = 0
-    def assign_path(self, path):
+    def assign_path(self, path = None):
         self.path = path
         self.current_pos = 0
     def next(self, sprite):
@@ -166,11 +166,23 @@ class Path:
         #     print(item.area, end=" ")
         # print('')
         current_sprite = self.path[self.current_pos]
-        # if self.current_pos != len(self.path):
+        # if self.current_pos != len(self.path) - 1:
         #     next_sprite = self.path[self.current_pos + 1]
         
-        if (sprite.x != current_sprite.x and sprite.y != current_sprite.y):
-            return current_sprite
+        # if (sprite.x != current_sprite.x and sprite.y != current_sprite.y):
+        #     return current_sprite
+            # if sprite.x == current_sprite.x:
+            #     if current_sprite.y <= sprite.y < next_sprite.y:
+            #         self.current_pos += 1
+            #     elif current_sprite.y >= sprite.y > next_sprite.y:
+            #         self.current_pos += 1
+            #     return self.path[self.current_pos]
+            # elif sprite.y == current_sprite.y:
+            #     if current_sprite.x <= sprite.x < next_sprite.x:
+            #         self.current_pos += 1
+            #     elif current_sprite.x >= sprite.x > next_sprite.x:
+            #         self.current_pos += 1
+            #     return self.path[self.current_pos]
         if sprite.area != current_sprite.area:
             return current_sprite
         else:
