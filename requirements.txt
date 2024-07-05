@@ -1,0 +1,4 @@
+pygame==2.3.0
+PySDL2==0.9.16
+pysdl2-dll==2.30.2
+PyTMX==3.31
