@@ -105,7 +105,7 @@ class CommandSystem(ext.Applicator):
 
                 tentative_g_score = g_score[current] + 1
                 if etype == "Grass":
-                    tentative_g_score += 2
+                    tentative_g_score += 1
                 # for item in f_score:
                 # print(item, type(item))
                 # print(neighbor_entity.sprite.area)

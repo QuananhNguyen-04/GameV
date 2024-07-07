@@ -118,23 +118,23 @@ class CameraSystem(ext.Applicator):
             # self.camera_movement(keys, pos, vel, camera, mouse_pos)
             if keys[sdl2.SDL_SCANCODE_LEFT] or mouse_pos[0] in range(0, 30):
                 if mouse_pos[0] in range(0, 30):
-                    vel.vx -= 16
+                    vel.vx -= 32
                 vel.vx -= 16
-            elif keys[sdl2.SDL_SCANCODE_RIGHT] or mouse_pos[0] in range(
+            if keys[sdl2.SDL_SCANCODE_RIGHT] or mouse_pos[0] in range(
                 camera.size[0] - 30, camera.size[0]
             ):
                 if mouse_pos[0] in range(camera.size[0] - 30, camera.size[0]):
-                    vel.vx += 16
+                    vel.vx += 32
                 vel.vx += 16
             if keys[sdl2.SDL_SCANCODE_UP] or mouse_pos[1] in range(0, 30):
                 if mouse_pos[1] in range(0, 30):
-                    vel.vy -= 16
+                    vel.vy -= 32
                 vel.vy -= 16
-            elif keys[sdl2.SDL_SCANCODE_DOWN] or mouse_pos[1] in range(
+            if keys[sdl2.SDL_SCANCODE_DOWN] or mouse_pos[1] in range(
                 camera.size[1] - 30, camera.size[1]
             ):
                 if mouse_pos[1] in range(camera.size[1] - 30, camera.size[1]):
-                    vel.vy += 16
+                    vel.vy += 32
                 vel.vy += 16
             if vel.vx == 0:
                 pass
