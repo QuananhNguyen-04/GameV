@@ -10,22 +10,32 @@ from __init import TILE_SIZE, SCREEN_HEIGHT, SCREEN_WIDTH
 class VisibleSystem(ext.Applicator):
     def __init__(self):
         super().__init__()
-        self.componenttypes = (components.AllyComponent, components.Focus)
+        # self.componenttypes = (components.AllyComponent, components.Focus)
+        self.componenttypes = (components.Visibility, components.Focus, components.Team)
 
     def process(self, world, componentsets):
-        for player, focus in componentsets:
-            if focus.focused is True:
-                ally_comp = world.combined_components(
-                    [components.Visibility, components.AllyComponent]
-                )
-                for visibility, ally_player in ally_comp:
-                    visibility.visible = True
-                return
-        enemy_comp = world.combined_components(
-            [components.Visibility, components.EnemyComponent]
-        )
-        for visibility, enemy_player in enemy_comp:
-            visibility.visible = True
+        pass
+        # # for player, focus in componentsets:
+        # #     if focus.focused is True:
+        # #         ally_comp = world.combined_components(
+        # #             [components.Visibility, components.AllyComponent]
+        # #         )
+        # #         for visibility, ally_player in ally_comp:
+        # #             visibility.visible = True
+        # #         return
+        # # enemy_comp = world.combined_components(
+        # #     [components.Visibility, components.EnemyComponent]
+        # # )
+        # # for visibility, enemy_player in enemy_comp:
+        # #     visibility.visible = True
+        # state = world.get_components(components.State)[0]
+        # state_dict = state.stateList
+        # team = state_dict["Team"]
+
+        # for visibility, focus, pteam in componentsets:
+        #     if pteam.team == team:
+
+
 
 
 class RaySystem(ext.Applicator):
@@ -97,7 +107,7 @@ class RaySystem(ext.Applicator):
 class FoWSystem(ext.Applicator):
     def __init__(self, quadtree):
         super().__init__()
-        self.componenttypes = (components.Ray, components.Visibility)
+        self.componenttypes = (components.Ray, components.Visibility, components.Team)
         self.camera = None
         self.quadtree = quadtree
 
@@ -154,8 +164,12 @@ class FoWSystem(ext.Applicator):
         if self.camera is None:
             self.camera = getEntityfromWorld(world, entities.CameraEntity)[0]
         camera_pos = getComponentfromWorld(world, self.camera, components.Position)
-
-        for ray, p_visibility in componentsets:
+        state = list(world.get_components(components.State))[0]
+        state_dict = state.stateList
+        team = state_dict["Team"]
+        for ray, p_visibility, p_team in componentsets:
+            if p_team.team != team:
+                continue
             if p_visibility.visible is False:
                 continue
             px, py = ray.pos

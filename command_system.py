@@ -169,6 +169,8 @@ class CommandSystem(ext.Applicator):
             
             # print("player:", sprite.area)
             path = self.astar(world, sprite, end_sprite.sprite)
+            if path == comp_path.path:
+                continue
             if path:
                 print([item.area for item in path])
                 comp_path.assign_path(path)

@@ -45,6 +45,7 @@ class StatusSystem(sdl2.ext.Applicator):
                             player[1].focused = False
                             if i == 0:
                                 player[1].focused = True
+                        state.stateList["Team"] = 1
                     if self.init_state:
                         self.init_state = False
                 except KeyError:
@@ -62,6 +63,7 @@ class StatusSystem(sdl2.ext.Applicator):
                             player[1].focused = False
                             if i == 1:
                                 player[1].focused = True
+                        state.stateList["Team"] = 1
                 except KeyError:
                     print(KeyError)
                     return
@@ -75,6 +77,7 @@ class StatusSystem(sdl2.ext.Applicator):
                             player[1].focused = False
                             if i == 2:
                                 player[1].focused = True
+                        state.stateList["Team"] = 1
                 except KeyError:
                     print(KeyError)
                     return
@@ -89,6 +92,7 @@ class StatusSystem(sdl2.ext.Applicator):
                                 focus_new = True
                                 focus_enemy = True
                                 enemy[1].focused = True
+                        state.stateList["Team"] = 2
                 except KeyError:
                     print(KeyError)
                     return

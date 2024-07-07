@@ -13,6 +13,7 @@ In the GameV directory, run 'python main.py' to play.
 Nothing
 ## Controls
 - Press ESC to execute the game (disabled when pausing)
+- 1, 2 for Ally Unit, 0 for Enemy Unit
 - WASD or mouse left click to move
 - Y to lock or unlock camera view
 - Arrow keys to move camera

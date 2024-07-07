@@ -55,13 +55,26 @@ class Visibility:
         self.block = block
 
 
+class Team:
+    def __init__(self, num) -> None:
+        self.team = num
+
+
 class State:
     def __init__(self, state_key, state_value) -> None:
         self.stateList = dict()
         for key, value in zip(state_key, state_value):
             self.stateList.update({key: value})
 
-
+class Direction:
+    direct = {
+        'left': 1,
+        'up': 2,
+        'right': 3,
+        'down': 4
+    }
+    def __init__(self, direction: int) -> None:
+        self.direction = direction
 class Fog:
     def __init__(self, w, h, sw, sh) -> None:
         self.surface = sdl2.SDL_CreateRGBSurfaceWithFormat(
@@ -92,7 +105,6 @@ class Fog:
             self.semi_transparent,
         )
 
-
 class ObjComponent:
     def __init__(self, type) -> None:
         self.type = type
@@ -102,6 +114,7 @@ class TileComponent(ObjComponent):
     def __init__(self, type) -> None:
         super().__init__(type)
         self.class_name = "Tile"
+
 
 class PlayerComponent(ObjComponent):
     def __init__(self, type, factory, spriteLists) -> None:
@@ -151,13 +164,16 @@ class SpriteList:
 
         # self.spriteLists = spriteLists
 
+
 class Path:
     def __init__(self, path: list = None) -> None:
         self.path = path
         self.current_pos = 0
-    def assign_path(self, path = None):
+
+    def assign_path(self, path=None):
         self.path = path
         self.current_pos = 0
+
     def next(self, sprite):
         # assert self.path is not None
         if self.path is None:
@@ -168,26 +184,26 @@ class Path:
         current_sprite = self.path[self.current_pos]
         # if self.current_pos != len(self.path) - 1:
         #     next_sprite = self.path[self.current_pos + 1]
-        
+
         # if (sprite.x != current_sprite.x and sprite.y != current_sprite.y):
         #     return current_sprite
-            # if sprite.x == current_sprite.x:
-            #     if current_sprite.y <= sprite.y < next_sprite.y:
-            #         self.current_pos += 1
-            #     elif current_sprite.y >= sprite.y > next_sprite.y:
-            #         self.current_pos += 1
-            #     return self.path[self.current_pos]
-            # elif sprite.y == current_sprite.y:
-            #     if current_sprite.x <= sprite.x < next_sprite.x:
-            #         self.current_pos += 1
-            #     elif current_sprite.x >= sprite.x > next_sprite.x:
-            #         self.current_pos += 1
-            #     return self.path[self.current_pos]
+        # if sprite.x == current_sprite.x:
+        #     if current_sprite.y <= sprite.y < next_sprite.y:
+        #         self.current_pos += 1
+        #     elif current_sprite.y >= sprite.y > next_sprite.y:
+        #         self.current_pos += 1
+        #     return self.path[self.current_pos]
+        # elif sprite.y == current_sprite.y:
+        #     if current_sprite.x <= sprite.x < next_sprite.x:
+        #         self.current_pos += 1
+        #     elif current_sprite.x >= sprite.x > next_sprite.x:
+        #         self.current_pos += 1
+        #     return self.path[self.current_pos]
         if sprite.area != current_sprite.area:
             return current_sprite
         else:
             self.current_pos += 1
-            
+
         if self.current_pos < len(self.path):
             # print(type(self.path[self.current_pos]))
             return self.path[self.current_pos]

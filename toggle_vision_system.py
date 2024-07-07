@@ -8,12 +8,15 @@ class ToggleVisionSystem(ext.Applicator):
         self.componenttypes = (
             components.Focus,
             components.Visibility,
+            components.Team
         )
 
     def process(self, world, componentsets):
-        for focus, visibility in componentsets:
-            if focus.focused is True:
+        global_state = list(world.get_components(components.State))[0]
+        state_dict = global_state.stateList
+        team = state_dict["Team"]
+        for focus, visibility, pteam in componentsets:
+            if pteam.team == team:
                 visibility.visible = True
-
             else:
                 visibility.visible = False

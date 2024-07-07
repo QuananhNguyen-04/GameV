@@ -23,7 +23,7 @@ from command_system import CommandSystem
 from render_system import SoftwareRenderer
 from status_system import StatusSystem
 from fog_system import FoWSystem, RaySystem, VisibleSystem
-from kill_system import KillSystem
+from combat_system import KillSystem
 from entities import CameraEntity, PlayerEntity, FogEntity, GlobalState, EnemyEntity
 # from zoom_system import ZoomSystem
 from toggle_vision_system import ToggleVisionSystem
@@ -34,23 +34,6 @@ pRight_path = RESOURCES.get_path("spearman-4-r.png")
 pLeft_path = RESOURCES.get_path("spearman-4-l.png")
 eRight_path = RESOURCES.get_path("enspearman-4-r.png")
 eLeft_path = RESOURCES.get_path("enspearman-4-l.png")
-# pUp_path = RESOURCES.get_path("pUp.png")
-# pDown_path = RESOURCES.get_path("pDown.png")
-# tile0_path = RESOURCES.get_path("dirtland2.png")
-# tile1_path = RESOURCES.get_path("dirtland1.png")
-# tile2_path = RESOURCES.get_path("grass.png")
-# tile3_path = RESOURCES.get_path("mount1.png")
-# tile4_path = RESOURCES.get_path("mount2.png")
-# # tile5_path = RESOURCES.get_path("t5.png")
-# # tile6_path = RESOURCES.get_path("t6.png")
-# # tile7_path = RESOURCES.get_path("t7.png")
-# tiles = [
-#     tile0_path,
-#     tile1_path,
-#     tile2_path,
-#     tile3_path,
-#     tile4_path,
-# ]
 
 pImages = {
     "left": pLeft_path,  # Left direction
@@ -62,21 +45,6 @@ eImages = {
     "left": eLeft_path,  # Left direction
     "right": eRight_path,  # Right direction
 }
-# tiles_type = {
-#     0: "Lane",
-#     1: "Lane",
-#     2: "Grass",
-#     3: "Obstacle",
-#     4: "Obstacle",
-# }
-# MAP = [
-#     [
-#         random.choices([0, 1, 2, 3, 4], weights=[0.4, 0.2, 0.1, 0.2, 0.1])[0]
-#         for _ in range(GAME_WIDTH // TILE_SIZE)
-#     ]
-#     for _ in range(GAME_HEIGHT // TILE_SIZE)
-# ]
-
 
 def inframe(x) -> int:
     return x // __init.TILE_SIZE * __init.TILE_SIZE
@@ -84,7 +52,7 @@ def inframe(x) -> int:
 
 def run():
     sdl2.ext.init()
-    factory = ext.SpriteFactory(sdl2.ext.SOFTWARE)
+    factory = ext.SpriteFactory(ext.SOFTWARE)
 
     window = sdl2.ext.Window(
         "PySDL2 Game", size=(__init.SCREEN_WIDTH, __init.SCREEN_HEIGHT)
@@ -139,7 +107,7 @@ def run():
 
     CameraEntity(world, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT)
     FogEntity(world, GAME_WIDTH, GAME_HEIGHT, SCREEN_WIDTH, SCREEN_HEIGHT)
-    GlobalState(world, ["Focus", "Player"], [True, 0])
+    GlobalState(world, ["Focus", "Player", "Team"], [True, 0, 0])
     # Create and add systems to the world
     renderer = SoftwareRenderer(window, world, quad)
     camera_system = CameraSystem()
@@ -219,3 +187,6 @@ def run():
 
 if __name__ == "__main__":
     run()
+    # profiler = profile.Profile()
+    # profiler.run('slow_function()')
+    # profiler.dump_stats('profile_results.prof')

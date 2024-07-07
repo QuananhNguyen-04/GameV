@@ -19,7 +19,7 @@ class TileEntity(sdl2.ext.Entity):
         self.visible = components.Visibility(False, True if type == "Obstacle" else False)
 
 class PlayerEntity(sdl2.ext.Entity):
-    def __init__(self, world, x, y, health, type, focus, factory, spriteLists) -> None:
+    def __init__(self, world, x, y, health, type, focus, factory, spriteLists, **kwargs) -> None:
         super().__init__()
         self.player = components.AllyComponent(type, factory, spriteLists)
         self.velocity = components.Velocity()
@@ -31,11 +31,14 @@ class PlayerEntity(sdl2.ext.Entity):
         self.execute = components.Execute()
         self.focus = components.Focus(focus)
         self.path = components.Path()
+        self.team = components.Team(kwargs.get("team", 1))
+        self.direction = components.Direction(1)
         # self.range = components.Ray(self.sprite.position, 12, 100)
 
 class EnemyEntity(sdl2.ext.Entity):
-    def __init__(self, world, x, y, health, type, focus, factory, spriteLists) -> None:
+    def __init__(self, world, x, y, health, type, focus, factory, spriteLists, **kwargs) -> None:
         super().__init__()
+        
         self.player = components.EnemyComponent(type, factory, spriteLists)
         self.velocity = components.Velocity()
         self.sprite = factory.from_image(spriteLists["right"])
@@ -46,6 +49,7 @@ class EnemyEntity(sdl2.ext.Entity):
         self.execute = components.Execute()
         self.focus = components.Focus(focus)
         self.path = components.Path()
+        self.team = components.Team(kwargs.get("team", 2))
         # self.range = components.Ray(self.sprite.position, 12, 100)
 class FogEntity(sdl2.ext.Entity):
     def __init__(self, world, w, h, sw, sh) -> None:
