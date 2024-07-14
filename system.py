@@ -2,11 +2,12 @@ import sdl2.ext as ext
 import sdl2
 import components
 import entities
-from __init import PLAYER_SPEED
+# from __init import PLAYER_SPEED
 from utils import getEntityfromWorld, getComponentfromWorld
 
 # from quadtree import Quadtree
-from __init import GAME_HEIGHT, GAME_WIDTH, SCREEN_HEIGHT, SCREEN_WIDTH
+import init
+from init import SCREEN_HEIGHT, SCREEN_WIDTH
 
 class CameraSystem(ext.Applicator):
     def __init__(self):
@@ -45,7 +46,7 @@ class CameraSystem(ext.Applicator):
             vel.vx = max(vel.vx, pos.x * -1)
         elif vel.vx > 0:
             vel.vx = (
-                min(pos.x + camera.size[0] + vel.vx, GAME_WIDTH)
+                min(pos.x + camera.size[0] + vel.vx, init.GAME_WIDTH)
                 - pos.x
                 - camera.size[0]
             )
@@ -56,7 +57,7 @@ class CameraSystem(ext.Applicator):
             vel.vy = max(vel.vy, pos.y * -1)
         elif vel.vy > 0:
             vel.vy = (
-                min(pos.y + camera.size[1] + vel.vy, GAME_HEIGHT)
+                min(pos.y + camera.size[1] + vel.vy, init.GAME_HEIGHT)
                 - pos.y
                 - camera.size[1]
             )
@@ -65,6 +66,8 @@ class CameraSystem(ext.Applicator):
     # ! focus on enemy entities for debug, invest gameplay
     def process(self, world, componentsets):
         # start = sdl2.SDL_GetTicks()
+        # GAME_WIDTH = GAME_WIDTH
+        # GAME_HEIGHT = __init.GAME_HEIGHT
         keys = sdl2.SDL_GetKeyboardState(None)
         mouse_pos = sdl2.ext.mouse_coords()
         if self.player_list is None:
@@ -111,8 +114,8 @@ class CameraSystem(ext.Applicator):
             screeny = centery - SCREEN_HEIGHT // 2
             # print("screen:", screenx, screeny)
 
-            pos.x = max(min(screenx, GAME_WIDTH - camera.size[0]), 0)
-            pos.y = max(min(screeny, GAME_HEIGHT - camera.size[1]), 0)
+            pos.x = max(min(screenx, init.GAME_WIDTH - camera.size[0]), 0)
+            pos.y = max(min(screeny, init.GAME_HEIGHT - camera.size[1]), 0)
 
         else:
             # self.camera_movement(keys, pos, vel, camera, mouse_pos)
@@ -142,7 +145,7 @@ class CameraSystem(ext.Applicator):
                 vel.vx = max(vel.vx, pos.x * -1)
             elif vel.vx > 0:
                 vel.vx = (
-                    min(pos.x + camera.size[0] + vel.vx, GAME_WIDTH)
+                    min(pos.x + camera.size[0] + vel.vx, init.GAME_WIDTH)
                     - pos.x
                     - camera.size[0]
                 )
@@ -153,7 +156,7 @@ class CameraSystem(ext.Applicator):
                 vel.vy = max(vel.vy, pos.y * -1)
             elif vel.vy > 0:
                 vel.vy = (
-                    min(pos.y + camera.size[1] + vel.vy, GAME_HEIGHT)
+                    min(pos.y + camera.size[1] + vel.vy, init.GAME_HEIGHT)
                     - pos.y
                     - camera.size[1]
                 )
@@ -176,9 +179,15 @@ class InputSystem(sdl2.ext.Applicator):
             components.Focus,
             components.Path
         )
-        self.player_list = None
+        # self.start_time = sdl2.SDL_GetTicks()
+
 
     def process(self, world, componentsets):
+        time_comp = list(world.get_components(components.Time))[0]
+        if not time_comp.allow:
+            return
+        # dt = (sdl2.SDL_GetTicks() - self.start_time)
+        # self.start_time = sdl2.SDL_GetTicks()
         keys = sdl2.keyboard.SDL_GetKeyboardState(None)
         # if self.player_list is None:
         #     self.player_list = getEntityfromWorld(world, entities.PlayerEntity)
@@ -188,6 +197,7 @@ class InputSystem(sdl2.ext.Applicator):
         #             world, x, components.PlayerComponent
         #         ).type,
         #     )
+        
         speed = 16
         for player, sprite, velocity, focus, path in componentsets:
             velocity.vx = 0
@@ -214,14 +224,15 @@ class InputSystem(sdl2.ext.Applicator):
             next_pos = path.next(sprite)
             if next_pos is None:
                 continue
+            dx, dy = next_pos
+            
             # sprite.x = next_pos.x
-            dx = 0 if (next_pos.x == sprite.x) else 1 if (next_pos.x > sprite.x) else -1
-            # sprite.y = next_pos.y
-            dy = 0 if (next_pos.y == sprite.y) else 1 if (next_pos.y > sprite.y) else -1
-            velocity.vx += dx * PLAYER_SPEED
-            velocity.vy += dy * PLAYER_SPEED
-            # print(dx, dy)
-            # print(sprite.area)
+            # dx = 0 if (next_pos.x == sprite.x) else 1 if (next_pos.x > sprite.x) else -1
+            # # sprite.y = next_pos.y
+            # dy = 0 if (next_pos.y == sprite.y) else 1 if (next_pos.y > sprite.y) else -1
+            # print((dx, dy))
+            velocity.vx += dx * speed
+            velocity.vy += dy * speed
 
 class MovementSystem(sdl2.ext.Applicator):
     def __init__(self):
@@ -234,16 +245,9 @@ class MovementSystem(sdl2.ext.Applicator):
         self.time_counter = None
 
     def process(self, world, componentsets):
-        # start = sdl2.SDL_GetTicks()
-        # print(camera_entity)
-        # dt = 0.5
-        # if self.time_counter is None:
-        #     self.time_counter = sdl2.SDL_GetTicks()
-        # else:
-        #     dt = (sdl2.SDL_GetTicks() - self.time_counter) / 50
-        #     self.time_counter = sdl2.SDL_GetTicks()
-
-
+        time_comp = list(world.get_components(components.Time))[0]
+        if not time_comp.allow:
+            return
         for player, sprite, velocity in componentsets:
             direction = (
                 "left" if velocity.vx < 0 else "none" if velocity.vx == 0 else "right"
@@ -281,6 +285,9 @@ class CollisionSystem(sdl2.ext.Applicator):
         self.grass_list = None
 
     def process(self, world, componentset):
+        time_comp = list(world.get_components(components.Time))[0]
+        if not time_comp.allow:
+            return
         start = sdl2.SDL_GetTicks()
         # camera = getEntityfromWorld(world, entities.CameraEntity)[0]
         # camera_pos = getComponentfromWorld(world, camera, components.Position)
@@ -294,26 +301,27 @@ class CollisionSystem(sdl2.ext.Applicator):
             # FIXME: need to fix this
             new_x = sprite.x + velocity.vx
             new_y = sprite.y + velocity.vy
+
+            #* overflow case
             if new_x < 0:  # and camera_pos.x == 0:
                 sprite.x = 0
                 velocity.vx = 0
             if new_y < 0:  # and camera_pos.y == 0:
                 velocity.vy = sprite.y = 0
             if (
-                new_x + sprite.size[0] > GAME_WIDTH  # camera_comp.width
-                # and camera_pos.x + camera_comp.width == GAME_WIDTH
+                new_x + sprite.size[0] > init.GAME_WIDTH  # camera_comp.width
+                # and camera_pos.x + camera_comp.width == __init.GAME_WIDTH
             ):
                 velocity.vx = 0
-                sprite.x = GAME_WIDTH - sprite.size[0]
+                sprite.x = init.GAME_WIDTH - sprite.size[0]
             if (
-                new_y + sprite.size[1] > GAME_HEIGHT  # camera_comp.height
-                # and camera_pos.y + camera_comp.height == GAME_HEIGHT
+                new_y + sprite.size[1] > init.GAME_HEIGHT  # camera_comp.height
+                # and camera_pos.y + camera_comp.height == __init.GAME_HEIGHT
             ):
                 velocity.vy = 0
-                sprite.y = GAME_HEIGHT - sprite.size[1]
+                sprite.y = init.GAME_HEIGHT - sprite.size[1]
             if velocity.vx == 0 and velocity.vy == 0:
                 continue
-
             tiles = []
             self.quadtree.query_circle(
                 (
@@ -337,26 +345,10 @@ class CollisionSystem(sdl2.ext.Applicator):
                     obstacles.add(tile)
                 elif ttype == "Grass":
                     grass.add(tile)
-            # current_player_rect = sdl2.SDL_Rect(0, 0, 0, 0)
-            # current_player_rect.x = sprite.x
-            # current_player_rect.y = sprite.y
-            # current_player_rect.w = sprite.size[0]
-            # current_player_rect.h = sprite.size[1]
-            # for tile in grass:
-            #     tile_rect.x = tile.sprite.x
-            #     tile_rect.y = tile.sprite.y
-            #     tile_rect.w = tile.sprite.size[0]
-            #     tile_rect.h = tile.sprite.size[1]
-
-            #     surface_B = tile.sprite.surface
-            #     if sdl2.SDL_HasIntersection(current_player_rect, tile_rect):
-            #         sdl2.SDL_SetSurfaceBlendMode(surface_B, sdl2.SDL_BLENDMODE_BLEND)
-            #         sdl2.SDL_SetSurfaceAlphaMod(surface_B, 100)
-            #     else:
-            #         sdl2.SDL_SetSurfaceBlendMode(surface_B, sdl2.SDL_BLENDMODE_NONE)
-
-            # print(tile.sprite.area for tile in tiles)
             faceObs = False
+            print(velocity.vx, velocity.vy)
+            print(sprite.area)
+            print(player_rect.x, player_rect.y, player_rect.w, player_rect.h)
             for tile in obstacles:
                 tile_rect.x = tile.sprite.x
                 tile_rect.y = tile.sprite.y
@@ -365,27 +357,40 @@ class CollisionSystem(sdl2.ext.Applicator):
                 if sdl2.SDL_HasIntersection(player_rect, tile_rect):
                     print("hit", tile.sprite.area)
                     if velocity.vx > 0:
-                        # velocity.vx =tile.sprite.x - sprite.x - sprite.size[0] #, velocity.vx
-                        sprite.x = tile.sprite.x - sprite.size[0]
-                        velocity.vx = 0
+                        print(velocity.vx)
+                        velocity.vx = tile.sprite.x - sprite.x - sprite.size[0] #, velocity.vx
+                        # sprite.x = tile.sprite.x - sprite.size[0]
+                        # velocity.vx = sprite.x - ()
+                        if not velocity.vx >= 0:
+                            print("\n\n========================vx >= 0 =====================\n")
+                            print(tile.sprite.x, sprite.x, sprite.size[0])
                         #)
                     elif velocity.vx < 0:
-                        # velocity.vx =tile.sprite.x - sprite.x + sprite.size[0] #, velocity.vx
-                        sprite.x = tile.sprite.x + tile.sprite.size[0]
-                        velocity.vx = 0
+                        velocity.vx =tile.sprite.x - sprite.x + sprite.size[0] #, velocity.vx
+                        # sprite.x = tile.sprite.x + tile.sprite.size[0]
+                        # velocity.vx = 0
+                        if not velocity.vx <= 0:
+                            print("\n\n========================vx <= 0 =============\n")
+                            print(tile.sprite.x, sprite.x, sprite.size[0])
                         #)
                     if velocity.vy > 0:
-                        # velocity.vy =tile.sprite.y - sprite.y - sprite.size[1] #, velocity.vy
-                        sprite.y = tile.sprite.y - sprite.size[1]
-                        velocity.vy = 0
+                        velocity.vy =tile.sprite.y - sprite.y - sprite.size[1] #, velocity.vy
+                        # sprite.y = tile.sprite.y - sprite.size[1]
+                        # velocity.vy = 0
+                        if not velocity.vy >= 0:
+                            print("\n\n========================vy >= 0 ==============\n")
+                            print(tile.sprite.y, sprite.y, sprite.size[1])
                         #)  
                     elif velocity.vy < 0:
-                        # velocity.vy =tile.sprite.y - sprite.y + sprite.size[1] #, velocity.vy
-                        sprite.y = tile.sprite.y + tile.sprite.size[1]
-                        velocity.vy = 0
+                        velocity.vy = tile.sprite.y - sprite.y + sprite.size[1] #, velocity.vy
+                        # sprite.y = tile.sprite.y + tile.sprite.size[1]
+                        # velocity.vy = 0
+                        if not velocity.vy <= 0:
+                            print("\n\n========================vy <= 0 =====================\n")
+                            print(tile.sprite.y, sprite.y, sprite.size[1])
                         #)
                     faceObs = True
-                    print("vel if hit", velocity.vx, velocity.vy)
+                    # assert sprite.x % 64 == 0 or sprite.y % 64 == 0
                     break
             if faceObs:
                 continue

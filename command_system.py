@@ -1,5 +1,5 @@
 import sdl2.ext as ext
-import sdl2
+# import sdl2
 import components
 import entities
 import heapq
@@ -44,15 +44,20 @@ class CommandSystem(ext.Applicator):
         self.quadtree.retrieve((start.x + start.size[0] // 2, start.y + start.size[1] // 2, 0, 0), start_tiles)
         start = start_tiles[0].sprite
         open_set = []
-        heapq.heappush(
-            open_set, self.PriorityQueueItem(start, self.heuristic(start, end))
-        )
+        # heapq.heappush(
+        #     open_set, self.PriorityQueueItem(start, self.heuristic(start, end))
+        # )
         closed_set = set()
         came_from = {}
         g_score = {start: 0}
         f_score = {start: self.heuristic(start, end)}
-        while open_set:
-            current = heapq.heappop(open_set).item
+        do_while = True
+        while do_while or open_set:
+            if do_while:
+                current = start
+            else:
+                current = heapq.heappop(open_set).item
+            do_while = False
             # print(open_set)
             current_w, current_h = current.size
             center_x, center_y = current.x + current_w // 2, current.y + current_h // 2
@@ -63,7 +68,7 @@ class CommandSystem(ext.Applicator):
                 while current in came_from:
                     current = came_from[current]
                     path.append(current)
-                    print("trace back")
+                    # print("trace back")
                 path.reverse()
                 return path
 
@@ -135,7 +140,7 @@ class CommandSystem(ext.Applicator):
             self.camera = getEntityfromWorld(world, entities.CameraEntity)[0]
 
         camera = getComponentfromWorld(world, self.camera, components.Position)
-        start = sdl2.SDL_GetTicks()
+        # start = sdl2.SDL_GetTicks()
         mouse_bstate = ext.mouse_button_state()
         if not mouse_bstate.any_pressed:
             return
@@ -144,7 +149,6 @@ class CommandSystem(ext.Applicator):
             mouse_pos = ext.mouse_coords()
             mouse_pos_x = (mouse_pos[0] + camera.x) 
             mouse_pos_y = (mouse_pos[1] + camera.y) 
-            print(mouse_pos, camera.x, camera.y, mouse_pos_x, mouse_pos_y)
         else:
             # if mouse_bstate.right == 1:
             return
@@ -153,7 +157,7 @@ class CommandSystem(ext.Applicator):
         if not self.quadtree.retrieve(
             (mouse_pos_x, mouse_pos_y, 0, 0), end_sprite
         ):
-            print("no sprite found")
+            # print("no sprite found")
             return
         
         end_sprite = end_sprite[0]
@@ -161,17 +165,19 @@ class CommandSystem(ext.Applicator):
         if etype == "Obstacle":
             # print("obstacle")
             return
-        # print(end_sprite.sprite.area)
-
+        # ! Bug when multi command call on a player.
         for player, sprite, focus, comp_path in componentsets:
             if not focus.focused:
                 continue
-            
-            # print("player:", sprite.area)
-            path = self.astar(world, sprite, end_sprite.sprite)
+            cur_sprite = sprite
+            # if comp_path.path is not None:
+            #     if not comp_path.current_pos == len(comp_path.path) - 1:
+            #         cur_sprite = comp_path.path[comp_path.current_pos + 1]
+            print("player:", sprite.area)
+            path = self.astar(world, cur_sprite, end_sprite.sprite)
             if path == comp_path.path:
                 continue
             if path:
-                print([item.area for item in path])
+                # print([item.area for item in path])
                 comp_path.assign_path(path)
-        print("CommandSystem time:",sdl2.SDL_GetTicks() - start)
+        # print("CommandSystem time:",sdl2.SDL_GetTicks() - start)

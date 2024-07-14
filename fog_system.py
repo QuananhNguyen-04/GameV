@@ -4,7 +4,7 @@ import entities
 import components
 import math
 from utils import getEntityfromWorld, getComponentfromWorld, clip_rect
-from __init import TILE_SIZE, SCREEN_HEIGHT, SCREEN_WIDTH
+import init
 
 
 class VisibleSystem(ext.Applicator):
@@ -174,11 +174,11 @@ class FoWSystem(ext.Applicator):
                 continue
             px, py = ray.pos
             if (px < -ray.radius + camera_pos.x) or (
-                px > SCREEN_WIDTH + ray.radius + camera_pos.x
+                px > init.SCREEN_WIDTH + ray.radius + camera_pos.x
             ):
                 continue
             if (py < -ray.radius + camera_pos.y) or (
-                py > SCREEN_HEIGHT + ray.radius + camera_pos.y
+                py > init.SCREEN_HEIGHT + ray.radius + camera_pos.y
             ):
                 continue
             local_tile_list = []
@@ -201,12 +201,12 @@ class FoWSystem(ext.Applicator):
                 if visibility.visible is True:
                     continue
                 if (
-                    not -TILE_SIZE
+                    not -init.TILE_SIZE
                     <= tile.position[0] - camera_pos.x
-                    <= SCREEN_WIDTH + TILE_SIZE
-                    or not -TILE_SIZE
+                    <= init.SCREEN_WIDTH + init.TILE_SIZE
+                    or not -init.TILE_SIZE
                     <= tile.position[1] - camera_pos.y
-                    <= SCREEN_HEIGHT + TILE_SIZE
+                    <= init.SCREEN_HEIGHT + init.TILE_SIZE
                 ):
                     continue
 

@@ -2,7 +2,7 @@
 import pytmx
 import sdl2.ext as ext
 from entities import TileEntity
-import __init
+import init
 
 RESOURCES = ext.Resources("./resources")
 
@@ -34,10 +34,10 @@ def read_tiledmap(world, factory, quad, path="./resources/untitled.tmx"):
     tmx_data = pytmx.TiledMap(path)
     height = tmx_data.tileheight
     width = tmx_data.tilewidth
-    __init.GAME_HEIGHT = tmx_data.height * height
-    __init.GAME_WIDTH = tmx_data.width * width
-    if quad.boundary != (0, 0, __init.GAME_WIDTH, __init.GAME_HEIGHT):
-        quad.boundary = (0, 0, __init.GAME_WIDTH, __init.GAME_HEIGHT)
+    init.GAME_HEIGHT = tmx_data.height * height
+    init.GAME_WIDTH = tmx_data.width * width
+    if quad.boundary != (0, 0, init.GAME_WIDTH, init.GAME_HEIGHT):
+        quad.boundary = (0, 0, init.GAME_WIDTH, init.GAME_HEIGHT)
     # print(tmx_data.gidmap)
     # print(tmx_data.imagemap)
     # print(tmx_data.tiledgidmap)

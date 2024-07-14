@@ -1,5 +1,5 @@
 import sdl2.ext as ext
-from __init import TILE_SIZE, SCREEN_WIDTH, SCREEN_HEIGHT
+from init import TILE_SIZE, SCREEN_WIDTH, SCREEN_HEIGHT
 from utils import getEntityfromWorld, getComponentfromWorld
 import sdl2
 import components

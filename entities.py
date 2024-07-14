@@ -60,3 +60,8 @@ class GlobalState(sdl2.ext.Entity):
     def __init__(self, world, state, value) -> None:
         super().__init__()
         self.state = components.State(state, value)
+
+class TimeLapse(sdl2.ext.Entity):
+    def __init__(self, world, time) -> None:
+        super().__init__()
+        self.last_called = components.Time(time)

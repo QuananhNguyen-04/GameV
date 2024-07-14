@@ -17,14 +17,9 @@ class KillSystem(sdl2.ext.Applicator):
         self.time_counter = None
 
     def process(self, world, componentsets):
-        if self.time_counter is None:
-            self.time_counter = sdl2.SDL_GetTicks()
-        else:
-            if sdl2.SDL_GetTicks() - self.time_counter > 200:
-                self.time_counter = sdl2.SDL_GetTicks()
-            else: 
-                return
-
+        time_comp = list(world.get_components(components.Time))[0]
+        if not time_comp.allow:
+            return
         enemy_list = world.combined_components(
             [ext.Sprite, components.PlayerComponent, components.Health]
         )

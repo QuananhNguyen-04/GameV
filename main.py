@@ -2,15 +2,15 @@ import random
 import sdl2.ext as ext
 import sdl2
 from quadtree import Quadtree
-from __init import (
+from init import (
     GAME_HEIGHT,
     GAME_WIDTH,
     SCREEN_WIDTH,
     SCREEN_HEIGHT,
     TILE_SIZE,
-    FRAME_TIME
+    FRAME_TIME,
 )
-import __init
+import init
 from map_reading import read_tiledmap
 from system import (
     InputSystem,
@@ -24,8 +24,17 @@ from render_system import SoftwareRenderer
 from status_system import StatusSystem
 from fog_system import FoWSystem, RaySystem, VisibleSystem
 from combat_system import KillSystem
-from entities import CameraEntity, PlayerEntity, FogEntity, GlobalState, EnemyEntity
+from entities import (
+    CameraEntity,
+    PlayerEntity,
+    FogEntity,
+    GlobalState,
+    EnemyEntity,
+    TimeLapse,
+)
+
 # from zoom_system import ZoomSystem
+from timing_system import TimingSystem
 from toggle_vision_system import ToggleVisionSystem
 from execute_system import ExecuteSystem
 
@@ -46,8 +55,9 @@ eImages = {
     "right": eRight_path,  # Right direction
 }
 
+
 def inframe(x) -> int:
-    return x // __init.TILE_SIZE * __init.TILE_SIZE
+    return x // init.TILE_SIZE * init.TILE_SIZE
 
 
 def run():
@@ -55,7 +65,7 @@ def run():
     factory = ext.SpriteFactory(ext.SOFTWARE)
 
     window = sdl2.ext.Window(
-        "PySDL2 Game", size=(__init.SCREEN_WIDTH, __init.SCREEN_HEIGHT)
+        "PySDL2 Game", size=(init.SCREEN_WIDTH, init.SCREEN_HEIGHT)
     )
     window.show()
 
@@ -65,10 +75,10 @@ def run():
 
     # MAP_TILES = []
     start = sdl2.SDL_GetTicks()
-    quad = Quadtree((0, 0, __init.GAME_WIDTH, __init.GAME_HEIGHT), 15)
+    quad = Quadtree((0, 0, init.GAME_WIDTH, init.GAME_HEIGHT), 15)
 
-    read_tiledmap(world, factory, quad, "./resources/map1.tmx")
-
+    read_tiledmap(world, factory, quad, "./resources/map2.tmx")
+    print(init.GAME_HEIGHT, init.GAME_WIDTH)
     print(f"Quadtree time: {sdl2.SDL_GetTicks() - start} ms")
     # Create player entities
     PlayerEntity(
@@ -108,6 +118,7 @@ def run():
     CameraEntity(world, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT)
     FogEntity(world, GAME_WIDTH, GAME_HEIGHT, SCREEN_WIDTH, SCREEN_HEIGHT)
     GlobalState(world, ["Focus", "Player", "Team"], [True, 0, 0])
+    TimeLapse(world, sdl2.SDL_GetTicks())
     # Create and add systems to the world
     renderer = SoftwareRenderer(window, world, quad)
     camera_system = CameraSystem()
@@ -134,6 +145,7 @@ def run():
     world.add_system(ExecuteSystem())
     world.add_system(movement_system)
     world.add_system(BlendedSystem(quad))
+    world.add_system(TimingSystem())
     world.add_system(renderer)
 
     running = True
@@ -174,14 +186,14 @@ def run():
         frame_duration = frame_end - frame_start
         real_fps = 1000 / frame_duration
 
-        print(f"FPS: {'{:0.2f}'.format(real_fps)}")
-        print(f"frame duration: {frame_duration}")
+        # print(f"FPS: {'{:0.2f}'.format(real_fps)}")
+        # print(f"frame duration: {frame_duration}")
         min_fps = min(real_fps, min_fps)
         # if min_fps < 15:
         #     break
         # if frame_duration < FRAME_TIME:
         #     sdl2.SDL_Delay(FRAME_TIME - frame_duration)
-    print (f"Min FPS: {'{:0.2f}'.format(min_fps)}")
+    print(f"Min FPS: {'{:0.2f}'.format(min_fps)}")
     sdl2.ext.quit()
 
 

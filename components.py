@@ -1,6 +1,6 @@
 # COMPONENTS CLASSES: STORE DATA
 import sdl2
-
+from init import FRAME_TIME
 
 class Position(object):
     def __init__(self, x, y) -> None:
@@ -175,38 +175,44 @@ class Path:
         self.current_pos = 0
 
     def next(self, sprite):
-        # assert self.path is not None
+        #! In the end of the path, it isnt complete arrive
+        #! Fix: player must reach current position before go to the next
+        def nearest_point(sprite, target):
+            # print(target.area, sprite.area)
+            # print("distance", abs(target.x - sprite.x)  + abs(target.x - sprite.y))
+            return abs(target.x - sprite.x)  < 8 and abs(target.y - sprite.y) < 8
+        def get_dir(target, sprite):
+            x = 0
+            y= 0
+            if abs(target.x - sprite.x) < abs(target.y - sprite.y):
+                if target.y > sprite.y:
+                    y = 1
+                elif target.y < sprite.y:
+                    y = -1
+            else: 
+                if target.x > sprite.x:
+                    x = 1
+                elif target.x < sprite.x:
+                    x = -1
+            return (x, y)
         if self.path is None:
             return None
-        # for item in self.path:
-        #     print(item.area, end=" ")
-        # print('')
         current_sprite = self.path[self.current_pos]
-        # if self.current_pos != len(self.path) - 1:
-        #     next_sprite = self.path[self.current_pos + 1]
-
-        # if (sprite.x != current_sprite.x and sprite.y != current_sprite.y):
-        #     return current_sprite
-        # if sprite.x == current_sprite.x:
-        #     if current_sprite.y <= sprite.y < next_sprite.y:
-        #         self.current_pos += 1
-        #     elif current_sprite.y >= sprite.y > next_sprite.y:
-        #         self.current_pos += 1
-        #     return self.path[self.current_pos]
-        # elif sprite.y == current_sprite.y:
-        #     if current_sprite.x <= sprite.x < next_sprite.x:
-        #         self.current_pos += 1
-        #     elif current_sprite.x >= sprite.x > next_sprite.x:
-        #         self.current_pos += 1
-        #     return self.path[self.current_pos]
-        if sprite.area != current_sprite.area:
-            return current_sprite
-        else:
+        # if nearest_point(sprite, current_sprite) and self.current_pos != len(self.path) - 1:
+        #     self.current_pos += 1
+        if current_sprite.area == sprite.area:
             self.current_pos += 1
-
+        # print(self.current_pos)
         if self.current_pos < len(self.path):
             # print(type(self.path[self.current_pos]))
-            return self.path[self.current_pos]
+            print("return path")
+            return get_dir(self.path[self.current_pos], sprite)
         else:
             self.path = None
             return None
+
+class Time:
+    def __init__(self, time) -> None:
+        self.last_logic_time = time
+        self.allow = True
+        self.cooldown = FRAME_TIME #ms
